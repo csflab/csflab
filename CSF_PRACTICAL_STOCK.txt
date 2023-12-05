@@ -1,0 +1,379 @@
+
+->1
+Install Virtual box
+~~~~~~~~~~~~~~~~~~~~~
+
+-> 2
+--> using telnet
+1. set up telnet
+2. to install telnet -> yum -y install telnet
+3.telnet google.com 80
+4. GET HTTP
+
+
+--> using netcat
+1. install netcat -> sudo apt-get install netcat'
+2. nc -v google.com 80
+3. for -n -> nc -v -n 172.217.174.238 80
+4. GET HTTP
+
+~~~~~~~~~~~~~~~~~~~~~~
+->3 Email just run op.txt will be geneareted
+
+
+
+EmailHeader .py
+
+import re
+
+emails = open("input.txt","r") #opens the file to analyze
+results = open("op.txt","w") #creates new file for search results
+
+resultsList = []
+
+for line in emails:
+    if "From - " in line: #recgonizes the beginning of a email message and adds a linebreak
+        newMessage = re.findall(r'\w\w\w\s\w\w\w.*', line)
+        if newMessage:
+            resultsList.append("\n\t*** EMAIL HEADER DETAILS ***\n")
+               
+    if "From: " in line:
+        address = re.findall(r'[\w.-]+@[\w.-]+', line)
+        if address:
+            resultsList.append("\n\nFrom : ")
+            resultsList.append(address)
+            resultsList.append(";")
+        
+    if "To: " in line:
+        if "Delivered-To:" not in line: #avoids confusion with 'Delivered-To:' tag
+            address = re.findall(r'[\w.-]+@[\w.-]+', line)
+            if address:
+                resultsList.append("\n\nTo : ")
+                
+                for person in address:
+                    resultsList.append(person)
+                    resultsList.append("; ")
+                
+    if "Bcc: " in line:
+        address = re.findall(r'[\w.-]+@[\w.-]+', line)
+        if address:
+            resultsList.append("\n\nBcc : ")
+            resultsList.append(address)
+            resultsList.append(";")
+        
+    if "Date: " in line:
+        address = re.findall(r'\w\w\w\,.*', line)
+        if address:     
+            resultsList.append("\n\nDate : ")
+            resultsList.append(address)
+            resultsList.append(";")
+        
+    if "Subject: " in line:
+        address = re.findall(r'[\w\s.-]+[\w.-]+', line)
+        if address:
+            resultsList.append("\n\nSub : ")
+            resultsList.append(address)
+       
+for result in resultsList:
+    results.writelines(result)
+
+
+emails.close()
+results.close()
+
+
+
+
+
+
+
+--------------------------
+
+
+email.py
+
+
+
+import re
+
+with open("input.txt", "r") as emails, open("op.txt", "w") as results:
+    resultsList = []
+
+    for line in emails:
+        if "From - " in line:
+            resultsList.append("\n\t*** EMAIL HEADER DETAILS ***\n")
+
+        if "From: " in line:
+            address = re.findall(r'From:\s*([\w.-]+@[\w.-]+)', line)
+            if address:
+                resultsList.append("\nFrom: ")
+                resultsList.append(address[0])
+
+        if "To: " in line and "Delivered-To:" not in line:
+            addresses = re.findall(r'To:\s*([\w.-]+@[\w.-]+)', line)
+            if addresses:
+                resultsList.append("\nTo: ")
+                resultsList.extend(addresses)
+
+        if "Bcc: " in line:
+            addresses = re.findall(r'Bcc:\s*([\w.-]+@[\w.-]+)', line)
+            if addresses:
+                resultsList.append("\nBcc: ")
+                resultsList.extend(addresses)
+
+        if "Date: " in line:
+            date = re.findall(r'Date:\s*(\w{3}.*)', line)
+            if date:
+                resultsList.append("\nDate: ")
+                resultsList.append(date[0])
+
+        if "Subject: " in line:
+            subject = re.findall(r'Subject:\s*([\w\s.-]+)', line)
+            if subject:
+                resultsList.append("\nSubject: ")
+                resultsList.append(subject[0])
+
+    for result in resultsList:
+        results.write(result)
+
+# Print the results list for checking purposes (can be removed in production)
+print("\n".join(resultsList))
+
+
+-----------------------------------
+email input file
+From - Tue July 08 11:13:12 2014
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 00000000
+Delivered-To: barde_sir@gmail.com
+Received: by 192.48.48.3 with SMTP id v3cs417003nfv; 08 July 2014 11:13:43 -0800 (PST)
+Received: by 192.65.211.13 with SMTP id n13mr5741660qbq.1168884841872; 08 July 2014 11:13:43 -0800 (PST)
+Return-Path: <navinwaghwani@gmail.com>
+Received: from bay0-omc3-s21.bay0.gmail.com (bay0-omc3-s21.bay0.gmail.com [65.54.246.221]) by mx.google.com with ESMTP id e13si6347910qbe.2007.01.15.10.13.58; Tue, 08 July 2014 11:13:43 -0800 (PST)
+Received-SPF: pass (google.com: domain of nobody@gmail.com designates 65.54.246.221 as permitted sender)
+Received: from gmail.com ([65.54.250.22]) by bay0-omc3-s21.bay0.gmail.com with Microsoft SMTPSVC(6.0.3790.2668); Tue, 08 July 2014 11:13:43 -0800
+Received: from mail pickup service by gmail.com with Microsoft SMTPSVC; Tue, 08 July 2014 11:13:43 -0800
+Message-ID: <BAY115-F12E4E575FF2272CF577605A1B50@phx.gbl>
+Received: from 65.54.250.200 by by115fd.bay115.gmail.msn.com with HTTP; Tue, 08 July 2014 11:13:43 GMT
+X-Originating-IP: [192.122.47.165]
+X-Originating-Email: [navinwaghwani@gmail.com]
+X-Sender: navinwaghwani@gmail.com
+From: =?iso-8859-1?B?UGF1bGEgTWFy7WEgTGlkaWEgRmxvcmVuemE=?=<navinwaghwani@gmail.com>
+To: receiver1@gmail.com, receiver2@gmail.com, receiver3@gmail.com
+Bcc: receiver4@gmail.com
+Subject: To analyze email header in Python
+Date: Tue, 08 July 2014 11:13:43 +0000
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_NextPart_000_d98_1c4f_3aa9"
+X-OriginalArrivalTime: 08 July 2014 11:13:43 (UTC)
+FILETIME=[E68D4740:01C738D0]
+Return-Path: navinwaghwani@gmail.com
+
+
+----------------------------------------
+
+Digital Signature 
+java Code
+
+
+import java.util.*;
+import java.math.BigInteger;
+
+class Main {
+    final static BigInteger one = new BigInteger("1");
+    final static BigInteger zero = new BigInteger("0");
+
+    public static BigInteger getNextPrime(String ans) {
+        BigInteger test = new BigInteger(ans);
+        while (!test.isProbablePrime(99))
+            e: {
+                test = test.add(one);
+            }
+        return test;
+    }
+
+    public static BigInteger findQ(BigInteger n) {
+        BigInteger start = new BigInteger("2");
+        while (!n.isProbablePrime(99)) {
+            while (!((n.mod(start)).equals(zero))) {
+                start = start.add(one);
+            }
+            n = n.divide(start);
+        }
+        return n;
+    }
+
+    public static BigInteger getGen(BigInteger p, BigInteger q, Random r) {
+        BigInteger h = new BigInteger(p.bitLength(), r);
+        h = h.mod(p);
+        return h.modPow((p.subtract(one)).divide(q), p);
+    }
+
+    public static void main(String[] args) throws java.lang.Exception {
+        Random randObj = new Random();
+        BigInteger p = getNextPrime("10600"); /* approximate prime */
+        BigInteger q = findQ(p.subtract(one));
+        BigInteger g = getGen(p, q, randObj);
+
+        System.out.println(" \n simulation of Digital Signature Algorithm \n");
+        System.out.println(" \n global public key components are:\n");
+        System.out.println("\np is: " + p);
+        System.out.println("\nq is: " + q);
+        System.out.println("\ng is: " + g);
+
+        BigInteger x = new BigInteger(q.bitLength(), randObj);
+        x = x.mod(q);
+        BigInteger y = g.modPow(x, p);
+        BigInteger k = new BigInteger(q.bitLength(), randObj);
+        k = k.mod(q);
+        BigInteger r = (g.modPow(k, p)).mod(q);
+        BigInteger hashVal = new BigInteger(p.bitLength(), randObj);
+        BigInteger kInv = k.modInverse(q);
+        BigInteger s = kInv.multiply(hashVal.add(x.multiply(r)));
+        s = s.mod(q);
+
+        System.out.println("\nsecret information are:\n");
+        System.out.println("x (private) is:" + x);
+        System.out.println("k (secret) is: " + k);
+        System.out.println("y (public) is: " + y);
+        System.out.println("h (rndhash) is: " + hashVal);
+        System.out.println("\n generating digital signature:\n");
+        System.out.println("r is : " + r);
+        System.out.println("s is : " + s);
+
+        BigInteger w = s.modInverse(q);
+        BigInteger u1 = (hashVal.multiply(w)).mod(q);
+        BigInteger u2 = (r.multiply(w)).mod(q);
+        BigInteger v = (g.modPow(u1, p)).multiply(y.modPow(u2, p));
+        v = (v.mod(p)).mod(q);
+
+        System.out.println("\nverifying digital signature (checkpoints)\n:");
+        System.out.println("w is : " + w);
+        System.out.println("u1 is : " + u1);
+        System.out.println("u2 is : " + u2);
+        System.out.println("v is : " + v);
+
+        if (v.equals(r)) {
+            System.out.println("\nsuccess: digital signature is verified!\n " + r);
+        } else {
+            System.out.println("\n error: incorrect digital signature\n ");
+        }
+    }
+}
+
+
+
+------------------------------
+Captcha Code
+java 
+
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    public String generateCaptcha() {
+        Random random = new Random();
+        int length = 5;
+        StringBuilder captchaStringBuilder = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int captchaNumber = Math.abs(random.nextInt()) % 60;
+            int charNumber = 0;
+
+            if (captchaNumber < 26) {
+                charNumber = 65 + captchaNumber;  // Uppercase letters
+            } else if (captchaNumber < 52) {
+                charNumber = 97 + (captchaNumber - 26);  // Lowercase letters
+            } else {
+                charNumber = 48 + (captchaNumber - 52);  // Numbers
+            }
+
+            captchaStringBuilder.append((char) charNumber);
+        }
+
+        return captchaStringBuilder.toString();
+    }
+
+    public static void main(String[] args) throws IOException {
+        Main captcha = new Main();  // Fix the class name to match the file name
+        String str = captcha.generateCaptcha();
+        System.out.println("Randomly Selected Captcha string is : " + str);
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Enter Captcha String name : ");
+        String name = reader.readLine();
+
+        if (str.equals(name)) {
+            System.out.println("Both strings are the same....");
+        } else {
+            System.out.println("Both strings are not the same....");
+        }
+    }
+}
+
+
+-------------------------------------
+
+fingerrecognisition 
+java code
+
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.image.PixelGrabber;
+
+public class Compare {
+    static void processImage() {
+        String file1 = "p4.jpg";
+        String file2 = "p5.jpg";
+
+        Image image1 = Toolkit.getDefaultToolkit().getImage(file1);
+        Image image2 = Toolkit.getDefaultToolkit().getImage(file2);
+
+        try {
+            PixelGrabber grab1 = new PixelGrabber(image1, 0, 0, -1, -1, false);
+            PixelGrabber grab2 = new PixelGrabber(image2, 0, 0, -1, -1, false);
+
+            int[] data1 = null;
+            if (grab1.grabPixels()) {
+                int width = grab1.getWidth();
+                int height = grab1.getHeight();
+                data1 = new int[width * height];
+                data1 = (int[]) grab1.getPixels();
+            }
+
+            int[] data2 = null;
+            if (grab2.grabPixels()) {
+                int width = grab2.getWidth();
+                int height = grab2.getHeight();
+                data2 = new int[width * height];
+                data2 = (int[]) grab2.getPixels();
+            }
+
+            System.out.println("Fingerprint matches: " + java.util.Arrays.equals(data1, data2));
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+    }
+
+    public static void main(String args[]) {
+        processImage();
+    }
+}
+
+/* OUTPUT 
+administrator@administrator-OptiPlex-3010:~/Desktop$ javac Compare.java 
+administrator@administrator-OptiPlex-3010:~/Desktop$ java Compare 
+Fingerprint matches : true 
+administrator@administrator-OptiPlex-3010:~/Desktop$ 
+*/
+--------------------------------------------------
+
+---------------------
+-----------------------
+to run a java in terminal
+install java
+javac file.java
+java file
+---------
+
+
